@@ -1,0 +1,108 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{ Job Shop Scheduling with Multi-shot ASP}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Mohammed M. S. El-Kholany \and Martin Gebser}
+%
+\authorrunning{M.M.S. El-Kholany, M. Gebser}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Alpen-Adria-Universität Klagenfurt, Austria\\
+\email{\{mohammed.el-kholany, martin.gebser\} @aau.at}\\ }
+%
+\maketitle              % typeset the header of the contribution
+%
+\section{Introduction}
+The Job shop scheduling problem consists of many jobs that must be processed by a set of machines.
+It is one of the most complicated combinatorial optimization problems \cite{lenstra1979computational}. However, in the literature, there are relatively a few studies that focused on large-scale Job shop scheduling. A rolling horizon heuristic has been proposed in \cite{singer2001decomposition}. It divides the problem into sub-problems (Time Windows) and solves each sub-problem using a shift bottleneck heuristic while minimizing Total Weighted Tardiness. A decomposition heurisitc based on multi-bottleneck machines was proposed in \cite{zhai2014decomposition} and each sub-problem was solved by Genetic Algorithm. In this study, we introduce a new decomposition method, where the number of operations per each Time Window is the same. 
+
+\section{Approach}
+The main idea of our proposed heuristic is to assign the operations into Time Windows based on the estimated starting time of each operation. The estimated starting time of the first operation of each job is zero. For the other operations, it is the summation of the estimated starting time and the processing time of the previous operation. The operations with the minimum estimated starting time will be assigned firstly to the Time Window. If two operations or more have the same estimated starting time, the operation with longer processing time will have a higher priority to be assigned firstly. In case the processing time is equal, the operation that has earlier order in its job will have a higher priority. If the order of the operations is the same, the operation that belongs to the smaller job number will have a higher priority.\\ 
+The operations are assigned to the first Time Window until the maximum available number of operations, and then the rest are assigned to the next Time Windows. After decomposing the problem, we solved each sub-problem individually using a Multi-shot Answer Set Programming system (ASP \cite{lifschitz1999answer,gebser2019multi}), \textit{clingo}[DL] \cite{janhunen2017clingo}, an extension of \textit{clingo} \cite{gebser2019multi} with difference constraints. \\
+We performed experiments with different scale benchmark instances \cite{taillard1993benchmarks,storer1992new}. The number of jobs and machines is between 30 - 100 and 10 – 20, respectively. As shown in Table \ref{tab:Table01}, the first column represents the number of Time Windows. The second column shows the comparison features, which are makespan, the running time in seconds, and the number of interrupted calls. The rest of the columns shows groups of instances with different size except for columns 5 and 6, which have the same size. It should be split because it is noticed in \cite{storer1992new} as Easy and Hard instances.\\ 
+Each group in the table represents a set of instances of the same size. The numbers in the table are the average of makespan, CPU time, and the number of interrupted calls of instances per group. From Table \ref{tab:Table01}, we can see that the values of makespan with one Time Window are the best in most cases. Increasing Time Windows provide solutions in a shorter time, but the quality of solutions is getting worse. However, when the problem size increased, the values of makespan of more Time Windows are better than those with one Time Window. For example, the makespan value of the instances 100 X 20 with one Time Windows is 46786.1. However, with three and four Time Windows are 7002.6 and 6964.4 respectively. In a conclusion, decomposing the whole problem into sub-problems has a positive impact especially when the problem size is large.
+\bibliographystyle{splncs04}
+\bibliography{References.bib}
+\newpage
+\appendix
+\section{Appendix}
+\begin{table}[!h]
+
+    \caption{Comparison between JSP instances with different Time Windows}
+    \label{tab:Table01}
+    
+    \resizebox{0.8\textwidth}{!}{\begin{minipage}{\textwidth}
+   % \resizebox{\textwidth}{!}{%
+    
+    \begin{tabular}{l l l l l l l l l l l}
+    \hline
+    Time Window(s)   & {}         & \multicolumn{6}{c}{Group of Instances}  \\
+                     & Comparison & 30 X 15 & 30 X 20  & 50 X 10 (E) & 50 X 10 (H) & 50 X 15 & 50 X 20 & 100 X 20 \\
+                     
+    \hline
+    1                & Makespan             & 2144.7	& 2450.0   & 3035.4	     & 4462.6	   & 3542.1	 & 3879.4  & 46786.1 \\
+                     & CPU(Sec)             & 1000.2	& 1002.1   & 1002.4	     & 999.9	   & 1000.4	 & 1001.2  & 1000.3 \\
+                     & Interrupted Calls    & 1.0	    & 1.0      & 1.0	     & 1.0	       & 1.0	 & 1.0     & 1.0 \\\\
+                     
+    2                & Makespan             & 2228.9	& 2345.0   & 3167.8	     & 5001.8	   & 3524.8	 & 3540.8  & 23977.5 \\
+                     & CPU(Sec)             & 999.7	    & 999.5	   & 1000.1	     & 1000.2	   & 1002.0	 & 1002.2  & 1002.2 \\
+                     & Interrupted Calls    & 2.0	    & 2.0      & 2.0	     & 2.0	       & 2.0	 & 2.0     & 2.0 \\\\
+                     
+    3                & Makespan             & 2396.7	& 2542.1   & 3439.6	     & 4914.0	   & 3621.5	 & 3605.7  & 7002.6 \\
+                     & CPU(Sec)             & 921.5	    & 804.8    & 997.8	     & 997.7	   & 998.5	 & 1001.5  & 1001.1 \\
+                     & Interrupted Calls    & 2.7	    & 2.2      & 3.0	     & 3.0	       & 3.0	 & 3.0     & 3.0 \\\\
+                     
+    4                & Makespan             & 2481.0	& 2632.9   & 3556.4	     & 5483.4	   & 3870.0	 & 3918.6  & 6964.4 \\
+                     & CPU(Sec)             & 345.9	    & 482.9	   & 999.5	     & 999.5	   & 998.1	 & 998.4   & 1000.3 \\
+                     & Interrupted Calls    & 1.1	    & 1.7      & 4.0	     & 4.0	       & 4.0	 & 4.0     & 4.0 \\\\
+                     
+    5                & Makespan             & 2537.9	& 2750.1   & 3572.4	     & 5598.2	   & 3908.1	 & 4006.3  & 7094.9 \\
+                     & CPU(Sec)             & 190.5	    & 233.3	   & 952.3	     & 999.2	   & 978.8	 & 974.3   & 1002.2 \\
+                     & Interrupted Calls    & 0.7	    & 1.1      & 4.6	     & 5.0	       & 4.8	 & 4.8     & 5.0 \\\\
+                     
+    6                & Makespan             & 2600.3	& 2856.4   & 3803.0	     & 5742.4	   & 4043.5	 & 4116.5  & 7357.9 \\
+                     & CPU(Sec)             & 75.9	    & 94.1	   & 781.6	     & 999.1	   & 919.6	 & 855.4   & 1002.1 \\
+                     & Interrupted Calls    & 0.3	    & 0.3      & 4.2	     & 6.0	       & 5.4	 & 4.9     & 6.0 \\\\
+                     
+    7                & Makespan             & 2659.7	& 2868.6   & 3669.6	     & 5612.4	   & 4064.3	 & 4144.1  & 7519.4 \\
+                     & CPU(Sec)             & 16.5	    & 6.4	   & 656.1	     & 885.3	   & 706.4	 & 668.0   & 1000.4 \\
+                     & Interrupted Calls    & 0.0	    & 0.0      & 4.6	     & 6.2	       & 4.1	 & 3.8     & 7.0 \\\\
+                     
+    8                & Makespan             & 2656.8	& 2938.8   & 3764.8	     & 5790.6	   & 4269.0	 & 4228.0  & 7587.0 \\
+                     & CPU(Sec)             & 40.5	    & 41.3	   & 355.5	     & 911.4	   & 522.6	 & 420.8   & 1000.3 \\
+                     & Interrupted Calls    & 0.3	    & 0.1      & 2.4	     & 7.2	       & 3.5	 & 2.6     & 8.0 \\\\
+                     
+    9                & Makespan             & 2642.9	& 2946.0   & 3691.0	     & 5546.8	   & 4146.4	 & 4366.2  & 7681.6 \\
+                     & CPU(Sec)             & 13.2	    & 3.1	   & 308.4	     & 854.1	   & 321.9	 & 392.9   & 10001.5 \\
+                     & Interrupted Calls    & 0.1	    & 0.0      & 2.2	     & 7.6	       & 2.5	 & 2.9     & 9.0 \\\\
+                     
+    10               & Makespan             & 2679.1	& 2982.2   & 3619.0	     & 5804.8	   & 4127.3	 & 4397.1  & 7925.6 \\
+                     & CPU(Sec)             & 2.6	    & 6.3	   & 209.4	     & 772.6	   & 239.7	 & 245.2   & 1002.1 \\
+                     & Interrupted Calls    & 0.0	    & 0.0      & 1.8	     & 7.4	       & 1.9	 & 2.0     & 10.0 \\
+    
+    \hline
+    \end{tabular}
+   % }
+     \end{minipage}}
+\end{table}
+
+\end{document}
